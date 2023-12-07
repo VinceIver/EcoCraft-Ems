@@ -1,0 +1,68 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Attendance{% endblock %}
+
+{% block content %}
+<h1 class="text-center mb-4" style="color: #88a376">ATTENDANCES</h1>
+<div class="container">
+
+    <!-- Form to select an employee -->
+    <form method="get" action="{% url 'employee:attendances' %}" class="mb-4">
+        <div class="form-row align-items-end">
+            <div class="col-md-4">
+                <label for="employee_select" style="color: black; font-size: larger;"><strong>Select Employee:</strong></label>
+                <select name="employee_id" id="employee_select" class="form-control">
+                    <option value="" {% if not selected_employee %}selected{% endif %}>All Employees</option>
+                    {% for emp in all_employees %}
+                        <option value="{{ emp.id }}" {% if selected_employee and emp.id == selected_employee.id %}selected{% endif %}>{{ emp.emp_fname }} {{ emp.emp_lname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn" style="background-color: #88a376; color: white;">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Display attendance data -->
+    <table class="table table-bordered">
+        <thead style="background-color:#7a876f;">
+        <tr>
+            <th>Employee Name</th>
+            <th>Date</th>
+            <th>Attended</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for attendance in filtered_attendance_days %}
+        <tr>
+            <td>{{ attendance.employee.emp_fname }} {{ attendance.employee.emp_lname }}</td>
+            <td>{{ attendance.date|date:"M. d, Y" }}</td>
+            <td>{% if attendance.attended %}Yes{% else %}No{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if filtered_attendance_days.paginator.num_pages > 1 %}
+        <div class="pagination">
+            <span class="step-links">
+                {% if filtered_attendance_days.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ filtered_attendance_days.previous_page_number }}">previous</a>
+                {% endif %}
+
+                {% if filtered_attendance_days.has_next %}
+                    <a href="?page={{ filtered_attendance_days.next_page_number }}">next</a>
+                    <a href="?page={{ filtered_attendance_days.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+
+    <!-- Display message if no attendance data is available -->
+    {% if filtered_attendance_days|length == 0 %}
+        <p>No attendance data available.</p>
+    {% endif %}
+</div>
+{% endblock %}

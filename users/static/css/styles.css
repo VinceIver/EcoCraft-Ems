@@ -1,0 +1,22 @@
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    
+        .step-links a {
+            color: #ffffff;
+            background-color: #7a876f;
+            text-decoration: none;
+            padding: 8px 16px;
+            margin: 0 4px;
+            border-radius: 4px;
+        }
+    
+        .step-links .current {
+            padding: 8px 16px;
+            color: #fff;
+            background-color: #7a876f;
+            border-radius: 4px;
+        }

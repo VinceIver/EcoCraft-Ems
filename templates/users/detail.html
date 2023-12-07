@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ employee.emp_fname }} {{ employee.emp_lname }}
+{% endblock %}
+
+{% block content %}
+    {% if error_message %}
+        <p class="alert alert-danger">
+            <strong>{{ error_message }}</strong>
+        </p>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="img-responsive">
+                <img src="/users/media/{{ employee.emp_image }}" alt="" class="img-rounded" width="300">
+            </div><br>
+            <div class="mb-5" style="color: black;">
+                <h1>{{ employee.emp_fname }} {{ employee.emp_lname }}</h1>
+                <p><strong>{{ employee.emp_email }}</strong></p>
+                {% if employee.status == 'active' %}
+                    <p style="color: green; font-weight: bolder;" ><strong style="color: black; font-weight: lighter;">Status:</strong> Active</p>
+                {% elif employee.status == 'on_leave' %}
+                    <p style="color: red; font-weight: bolder;"><strong style="color: black;font-weight: bold;">Status:</strong> On Leave</p>
+                {% endif %}
+                <p><strong>Position:</strong> {{ employee.emp_position }}</p>
+                <p><strong>Salary:</strong> ₱{{ employee.salary }}/Day</p>
+                <p><strong>Contact No.:</strong> (+63)&nbsp;{{ employee.contact_number }}</p>
+                <p><strong>Birthday:</strong> {{ employee.birthday }}</p>
+                <p><strong>Address:</strong></p>
+                <p>{{ employee.address.street_address }}, {{ employee.address.city }}, {{ employee.address.state }} {{ employee.address.zip_code }}</p>
+            </div>
+            <div class="btn-group mt-5 mx-5">
+                {% if user.is_staff %}
+                    <a href="{% url 'employee:delete' employee.id %}" class="btn btn-l btn-danger">Delete</a>
+                    <a href="{% url 'employee:edit' employee.id %}" class="btn btn-l btn-info">Edit</a>
+                {% endif %}
+                <a href="{% url 'employee:index' %}" class="btn btn-l btn-success">Return</a>
+            </div>
+        </div>
+
+        <div class="col-lg-6" style="color: black;">
+            <h2>COMMENTS</h2>
+            <p><strong>Total of</strong> {{ comments_count }}</p>
+            {% if comments_count > 0 %}
+                {% for comment in comments %}
+                    {% if comment.active %}
+                        <p><strong>{{ comment.name }}</strong>: {{ comment.body }}</p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            <hr>
+            <br>
+            
+            <form action="{% url 'employee:addcomment' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label><strong>Comments:</strong></label>
+                    <textarea name="comment" id="comment" cols="30" rows="5" class="form-control" required></textarea>
+                </div>
+                <input type="hidden" name="employee_id" id="employee_id" value="{{ employee.id }}">
+                <input type="hidden" name="name" id="name" value="{{ user.username }}">
+                <input type="hidden" name="email" id="email" value="{{ user.email }}">
+
+                <button type="submit" class="btn btn-sm " style="background-color:#88a78e; color: white;">Add Comment</button>
+            </form>
+
+            <h2>Attendance Checklist</h2>
+            <form method="post" action="{% url 'employee:update_attendance' employee.id %}">
+                {% csrf_token %}
+                <table class="table table-bordered">
+                    <thead style="background-color: #7a876f;">
+                        <tr>
+                            <th>&nbsp;</th>
+                            {% for date in week_dates %}
+                                <th>{{ date }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Attendance</td>
+                            {% for date in week_dates %}
+                                <td>
+                                    <input type="checkbox" name="attendance_dates" value="{{ date }}" {% if date in attendance_dates %}checked{% endif %}>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="submit" class="btn btn-sm" style="background-color:#88a78e; color: white; ">Update Attendance</button>
+            </form>
+
+            <script>
+                //display birthday 
+                function showBirthdayAlert() {
+                    alert("It's {{ employee.emp_fname }}'s birthday! 🎉 Greet them a Happy Birthday!");
+
+                }
+                // Check if today is the birthday
+                var today = new Date();
+                var birthday = new Date("{{ employee.birthday|date:'Y-m-d' }}");
+                birthday.setFullYear(today.getFullYear());  // Set the year of the birthday to current year
+                if (today.toDateString() === birthday.toDateString()) {
+                    //show the alert
+                    window.onload = showBirthdayAlert;
+                }
+            </script>
+        </div>
+    </div>
+{% endblock %}

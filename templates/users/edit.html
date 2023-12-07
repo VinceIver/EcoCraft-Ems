@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ employee.emp_fname }} {{ employee.emp_lname }}
+{% endblock %}
+
+{% block content %}
+    {% if error_message %}
+        <p class="alert alert-danger">
+            <strong>{{ error_message }}</strong>
+        </p>
+    {% endif %}
+    <h1 class="text-center mb-4" style="color: #88a376">EDIT EMPLOYEE</h1>
+    <form action="{% url 'employee:processedit' employee.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label style="color: black;">First Name</label>
+                <input type="text" name="fname" id="fname" class="form-control" required value="{{ employee.emp_fname }}">
+            </div>
+            <div class="form-group col-md-6">
+                <label style="color: black;">Last Name</label>
+                <input type="text" name="lname" id="lname" class="form-control" required value="{{ employee.emp_lname }}">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label style="color: black;">Email</label>
+                <input type="email" name="email" id="email" class="form-control" required value="{{ employee.emp_email }}">
+            </div>
+            <div class="form-group col-md-6">
+                <label style="color: black;">Position</label>
+                <input type="text" name="position" id="position" class="form-control" required value="{{ employee.emp_position }}">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label style="color: black;">Hours Worked</label>
+                <input type="number" name="hours_worked" id="hours_worked" class="form-control" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label style="color: black;">Hourly Rate (₱)</label>
+                <input type="number" name="hourly_rate" id="hourly_rate" class="form-control" required step="50">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label style="color: black;">Contact No. (+63)</label>
+                <input type="text" name="contact_number" id="contact_number" class="form-control" maxlength="10" required value="{{ employee.contact_number }}">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label style="color: black;">Street Address</label>
+                <input type="text" name="street_address" id="street_address" class="form-control" required value="{{ employee.address.street_address }}">
+            </div>
+            <div class="form-group col-md-6">
+                <label style="color: black;">City</label>
+                <input type="text" name="city" id="city" class="form-control" required value="{{ employee.address.city }}">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label style="color: black;">State</label>
+                <input type="text" name="state" id="state" class="form-control" value="{{ employee.address.state }}" placeholder="(Optional)">
+            </div>
+            <div class="form-group col-md-6">
+                <label style="color: black;">ZIP Code</label>
+                <input type="text" name="zip_code" id="zip_code" class="form-control" required value="{{ employee.address.zip_code }}">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label style="color: black;">Status</label>
+                <select name="status" id="status" class="form-control" required>
+                    <option value="active" {% if employee.status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="on_leave" {% if employee.status == 'on_leave' %}selected{% endif %}>On Leave</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label style="color: black;">User Image</label><br>
+            <input type="file" name="image" id="image">
+        </div>
+
+        <button type="submit" class="btn mt-2" style="background-color:#88a78e; color: white;">Update</button>
+    </form>
+
+{% endblock %}
